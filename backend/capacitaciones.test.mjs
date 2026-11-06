@@ -1,45 +1,71 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { once } from 'node:events';
-import { createApp } from './server.mjs';
-
-test('capacitación grupal, vencimientos, avisos leídos y renovación',async()=>{
-  const server=createApp(':memory:');server.listen(0,'127.0.0.1');await once(server,'listening');let cookie='';
-  const base=`http://127.0.0.1:${server.address().port}`;
-  const request=async(method,path,data)=>{const r=await fetch(base+path,{method,headers:{'Content-Type':'application/json',Cookie:cookie},body:data===undefined?undefined:JSON.stringify(data)});return{status:r.status,b:await r.json(),cookie:r.headers.get('set-cookie')?.split(';')[0]};};
-  try{
-    cookie=(await request('POST','/api/auth/setup',{usuario:'admin',nombre:'Admin',password:'Prueba88'})).cookie;
-    const p1=(await request('POST','/api/colaboradores',{codigo:'A1',nombre:'Persona 1',puesto:'Técnico',area:'Campo',empresa:'STEEL',estado:'Activo'})).b;
-    const p2=(await request('POST','/api/colaboradores',{codigo:'A2',nombre:'Persona 2',puesto:'Técnico',area:'Campo',empresa:'IEM',estado:'Activo'})).b;
-    const today=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Costa_Rica',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
-    const plus=days=>new Date(Date.parse(today)+days*86400000).toISOString().slice(0,10);
-    const catalogo=await request('POST','/api/catalogo-capacitaciones',{nombre:'Trabajo en altura',descripcion:'Seguridad en alturas',activo:1});assert.equal(catalogo.status,201);
-    assert.equal((await request('POST','/api/catalogo-capacitaciones',{nombre:'Trabajo en altura'})).status,409);
-    const datos={solicitud:'grupo-1',tema:'Trabajo en altura',fecha:plus(-10),vence:plus(5),instructor:'Instructor de prueba',lugar:'Sala',observaciones:'Prueba',participantes:[p1.id,p2.id]};
-    assert.equal((await request('POST','/api/capacitaciones',{...datos,solicitud:'individual-invalida',catalogo_id:catalogo.b.id,modalidad:'Individual'})).status,400);
-    const individual=await request('POST','/api/capacitaciones',{...datos,solicitud:'individual',catalogo_id:catalogo.b.id,modalidad:'Individual',participantes:[p1.id],vence:null});assert.equal(individual.status,201);assert.equal(individual.b.modalidad,'Individual');
-    await request('POST','/api/capacitaciones/'+individual.b.id+'/anular',{motivo:'Prueba individual'});
-    assert.equal((await request('PUT','/api/catalogo-capacitaciones/'+catalogo.b.id,{nombre:'Otro nombre',activo:1})).status,409);
-    let r=await request('POST','/api/capacitaciones',datos);assert.equal(r.status,201);assert.equal(r.b.asistentes.length,2);const curso=r.b;
-    await request('POST','/api/capacitaciones',datos);assert.equal((await request('GET','/api/capacitaciones')).b.length,2);
-    assert.equal((await request('POST','/api/capacitaciones',{...datos,solicitud:'bad',participantes:[p1.id,p1.id]})).status,400);
-    assert.equal((await request('POST','/api/capacitaciones',{...datos,solicitud:'bad2',participantes:[p1.id,'no-existe']})).status,400);
-    assert.equal((await request('GET','/api/colaboradores/'+p1.id+'/capacitaciones')).b.length,2);
-    let alerts=(await request('GET','/api/notificaciones')).b.avisos;assert.equal(alerts.length,2);assert.equal(alerts[0].estado,'Por vencer');assert.equal(alerts[0].dias,5);
-    await request('POST','/api/notificaciones/leidas',{ids:alerts.map(a=>a.id)});assert.equal((await request('GET','/api/notificaciones')).b.avisos.filter(a=>!a.leida).length,0);
-    assert.equal((await request('GET','/api/notificaciones?dias=2')).b.avisos.length,0);
-    r=await request('POST','/api/capacitaciones',{...datos,solicitud:'renovar',fecha:today,vence:plus(365),participantes:[p1.id]});assert.equal(r.status,201);const renovacion=r.b;
-    alerts=(await request('GET','/api/notificaciones')).b.avisos;assert.equal(alerts.length,1);assert.equal(alerts[0].colaborador_id,p2.id);
-    await request('POST','/api/capacitaciones/'+renovacion.id+'/anular',{motivo:'Error de captura de prueba'});assert.equal((await request('GET','/api/notificaciones')).b.avisos.length,2);
-    const expired=await request('POST','/api/capacitaciones',{...datos,solicitud:'vencido',tema:'Curso vencido',fecha:plus(-20),vence:plus(-1),participantes:[p1.id]});assert.equal(expired.status,201);assert.ok((await request('GET','/api/notificaciones')).b.avisos.some(a=>a.estado==='Vencido'));
-    const diferentes=await request('POST','/api/capacitaciones',{...datos,tema:'Fechas individuales',solicitud:'fechas-individuales',vencimientos:{[p1.id]:plus(2),[p2.id]:null}});assert.equal(diferentes.status,201);assert.equal(diferentes.b.asistentes.find(p=>p.colaborador_id===p1.id).vence,plus(2));assert.equal(diferentes.b.asistentes.find(p=>p.colaborador_id===p2.id).vence,null);
-    assert.equal((await request('POST','/api/capacitaciones',{...datos,solicitud:'fecha-mala',vencimientos:{[p1.id]:plus(-30)}})).status,400);
-    assert.equal((await request('POST','/api/capacitaciones',{...datos,solicitud:'fecha-ajena',vencimientos:{ajeno:today}})).status,400);
-    assert.equal((await request('POST','/api/capacitaciones',{...datos,solicitud:'fechas-individuales',tema:'Fechas individuales',vencimientos:{[p1.id]:plus(2),[p2.id]:null}})).status,201);
-    await request('POST','/api/usuarios',{usuario:'consulta',nombre:'Consulta',rol:'Consulta',activo:1,password:'Prueba88'});cookie=(await request('POST','/api/auth/login',{usuario:'consulta',password:'Prueba88'})).cookie;
-    assert.equal((await request('POST','/api/capacitaciones',{...datos,solicitud:'denied'})).status,403);
-    assert.equal((await request('POST','/api/notificaciones/leidas',{ids:(await request('GET','/api/notificaciones')).b.avisos.map(a=>a.id)})).status,200);
-    assert.equal((await request('POST','/api/capacitaciones/'+curso.id+'/anular',{motivo:'No permitido'})).status,403);
-  }finally{await new Promise(r=>server.close(r));}
+import { createApp } from './test-database.mjs';
+test('capacitación grupal, vencimientos, avisos leídos y renovación', async () => {
+    const server = (await createApp(':memory:'));
+    server.listen(0, '127.0.0.1');
+    await once(server, 'listening');
+    let cookie = '';
+    const base = `http://127.0.0.1:${server.address().port}`;
+    const request = async (method, path, data) => { const r = await fetch(base + path, { method, headers: { 'Content-Type': 'application/json', Cookie: cookie }, body: data === undefined ? undefined : JSON.stringify(data) }); return { status: r.status, b: await r.json(), cookie: r.headers.get('set-cookie')?.split(';')[0] }; };
+    try {
+        cookie = (await request('POST', '/api/auth/setup', { usuario: 'admin', nombre: 'Admin', password: 'Prueba88' })).cookie;
+        const p1 = (await request('POST', '/api/colaboradores', { codigo: 'A1', nombre: 'Persona 1', puesto: 'Técnico', area: 'Campo', empresa: 'STEEL', estado: 'Activo' })).b;
+        const p2 = (await request('POST', '/api/colaboradores', { codigo: 'A2', nombre: 'Persona 2', puesto: 'Técnico', area: 'Campo', empresa: 'IEM', estado: 'Activo' })).b;
+        const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Costa_Rica', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
+        const plus = days => new Date(Date.parse(today) + days * 86400000).toISOString().slice(0, 10);
+        const catalogo = await request('POST', '/api/catalogo-capacitaciones', { nombre: 'Trabajo en altura', descripcion: 'Seguridad en alturas', activo: 1 });
+        assert.equal(catalogo.status, 201);
+        assert.equal((await request('POST', '/api/catalogo-capacitaciones', { nombre: 'Trabajo en altura' })).status, 409);
+        const datos = { solicitud: 'grupo-1', tema: 'Trabajo en altura', fecha: plus(-10), vence: plus(5), instructor: 'Instructor de prueba', lugar: 'Sala', observaciones: 'Prueba', participantes: [p1.id, p2.id] };
+        assert.equal((await request('POST', '/api/capacitaciones', { ...datos, solicitud: 'individual-invalida', catalogo_id: catalogo.b.id, modalidad: 'Individual' })).status, 400);
+        const individual = await request('POST', '/api/capacitaciones', { ...datos, solicitud: 'individual', catalogo_id: catalogo.b.id, modalidad: 'Individual', participantes: [p1.id], vence: null });
+        assert.equal(individual.status, 201);
+        assert.equal(individual.b.modalidad, 'Individual');
+        await request('POST', '/api/capacitaciones/' + individual.b.id + '/anular', { motivo: 'Prueba individual' });
+        assert.equal((await request('PUT', '/api/catalogo-capacitaciones/' + catalogo.b.id, { nombre: 'Otro nombre', activo: 1 })).status, 409);
+        let r = await request('POST', '/api/capacitaciones', datos);
+        assert.equal(r.status, 201);
+        assert.equal(r.b.asistentes.length, 2);
+        const curso = r.b;
+        await request('POST', '/api/capacitaciones', datos);
+        assert.equal((await request('GET', '/api/capacitaciones')).b.length, 2);
+        assert.equal((await request('POST', '/api/capacitaciones', { ...datos, solicitud: 'bad', participantes: [p1.id, p1.id] })).status, 400);
+        assert.equal((await request('POST', '/api/capacitaciones', { ...datos, solicitud: 'bad2', participantes: [p1.id, 'no-existe'] })).status, 400);
+        assert.equal((await request('GET', '/api/colaboradores/' + p1.id + '/capacitaciones')).b.length, 2);
+        let alerts = (await request('GET', '/api/notificaciones')).b.avisos;
+        assert.equal(alerts.length, 2);
+        assert.equal(alerts[0].estado, 'Por vencer');
+        assert.equal(alerts[0].dias, 5);
+        await request('POST', '/api/notificaciones/leidas', { ids: alerts.map(a => a.id) });
+        assert.equal((await request('GET', '/api/notificaciones')).b.avisos.filter(a => !a.leida).length, 0);
+        assert.equal((await request('GET', '/api/notificaciones?dias=2')).b.avisos.length, 0);
+        r = await request('POST', '/api/capacitaciones', { ...datos, solicitud: 'renovar', fecha: today, vence: plus(365), participantes: [p1.id] });
+        assert.equal(r.status, 201);
+        const renovacion = r.b;
+        alerts = (await request('GET', '/api/notificaciones')).b.avisos;
+        assert.equal(alerts.length, 1);
+        assert.equal(alerts[0].colaborador_id, p2.id);
+        await request('POST', '/api/capacitaciones/' + renovacion.id + '/anular', { motivo: 'Error de captura de prueba' });
+        assert.equal((await request('GET', '/api/notificaciones')).b.avisos.length, 2);
+        const expired = await request('POST', '/api/capacitaciones', { ...datos, solicitud: 'vencido', tema: 'Curso vencido', fecha: plus(-20), vence: plus(-1), participantes: [p1.id] });
+        assert.equal(expired.status, 201);
+        assert.ok((await request('GET', '/api/notificaciones')).b.avisos.some(a => a.estado === 'Vencido'));
+        const diferentes = await request('POST', '/api/capacitaciones', { ...datos, tema: 'Fechas individuales', solicitud: 'fechas-individuales', vencimientos: { [p1.id]: plus(2), [p2.id]: null } });
+        assert.equal(diferentes.status, 201);
+        assert.equal(diferentes.b.asistentes.find(p => p.colaborador_id === p1.id).vence, plus(2));
+        assert.equal(diferentes.b.asistentes.find(p => p.colaborador_id === p2.id).vence, null);
+        assert.equal((await request('POST', '/api/capacitaciones', { ...datos, solicitud: 'fecha-mala', vencimientos: { [p1.id]: plus(-30) } })).status, 400);
+        assert.equal((await request('POST', '/api/capacitaciones', { ...datos, solicitud: 'fecha-ajena', vencimientos: { ajeno: today } })).status, 400);
+        assert.equal((await request('POST', '/api/capacitaciones', { ...datos, solicitud: 'fechas-individuales', tema: 'Fechas individuales', vencimientos: { [p1.id]: plus(2), [p2.id]: null } })).status, 201);
+        await request('POST', '/api/usuarios', { usuario: 'consulta', nombre: 'Consulta', rol: 'Consulta', activo: 1, password: 'Prueba88' });
+        cookie = (await request('POST', '/api/auth/login', { usuario: 'consulta', password: 'Prueba88' })).cookie;
+        assert.equal((await request('POST', '/api/capacitaciones', { ...datos, solicitud: 'denied' })).status, 403);
+        assert.equal((await request('POST', '/api/notificaciones/leidas', { ids: (await request('GET', '/api/notificaciones')).b.avisos.map(a => a.id) })).status, 200);
+        assert.equal((await request('POST', '/api/capacitaciones/' + curso.id + '/anular', { motivo: 'No permitido' })).status, 403);
+    }
+    finally {
+        await new Promise(r => server.close(r));
+    }
 });
-

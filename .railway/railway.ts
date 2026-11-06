@@ -1,6 +1,9 @@
-import { defineRailway, github, project, service, volume } from "railway/iac";
+import { defineRailway, github, postgres, project, service, volume } from "railway/iac";
 
 export default defineRailway(() => {
+  const Postgres = postgres("Postgres", { region: "iad" });
+  Postgres.networking = { privateNetworkEndpoint: "postgres" };
+  const postgresVolume = volume("postgres-volume", { alerts: { usage: { "100": {}, "80": {}, "95": {} } }, allowOnlineResize: true, region: "iad", sizeMB: 5000 });
   const sohaVolume = volume("soha-volume", { alerts: { usage: { "100": {}, "80": {}, "95": {} } }, allowOnlineResize: true, region: "iad", sizeMB: 5000 });
   const soha = service("soha", {
     source: github("vchongsteel/SOHA", { branch: "main", checkSuites: false }),
@@ -13,6 +16,6 @@ export default defineRailway(() => {
 
   return project("SOHA", {
     variables: { managed: false },
-    resources: [soha, sohaVolume],
+    resources: [soha, Postgres, postgresVolume, sohaVolume],
   });
 });

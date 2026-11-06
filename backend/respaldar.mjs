@@ -2,7 +2,13 @@ import { DatabaseSync, backup } from 'node:sqlite';
 import { mkdirSync, existsSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import {openDatabase} from './database.mjs';
+import {respaldarPostgresql} from './respaldo-postgresql.mjs';
 
+if(process.env.DATABASE_URL){
+ const db=await openDatabase();
+ try{await respaldarPostgresql(db,process.argv.includes('--diario'));}finally{await db.close();}
+}else{
 const raiz=dirname(fileURLToPath(import.meta.url));
 const origen=resolve(process.env.DB_PATH || resolve(raiz,'data/salud.sqlite'));
 if(!existsSync(origen)){console.log('No hay una base de datos para respaldar todavía.');process.exit(0);}
@@ -17,3 +23,4 @@ try{await backup(db,archivo);}finally{db.close();}
 const copia=new DatabaseSync(archivo,{readOnly:true});
 try{if(copia.prepare('PRAGMA integrity_check').get().integrity_check!=='ok'||copia.prepare('PRAGMA foreign_key_check').all().length)throw Error('La copia no superó la verificación de integridad.');}finally{copia.close();}
 console.log('Respaldo verificado: '+archivo);
+}

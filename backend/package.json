@@ -4,10 +4,13 @@
   "type": "module",
   "scripts": {
     "start": "node server.mjs",
-    "test": "node --test server.test.mjs capacitaciones.test.mjs empresas.test.mjs hosting.test.mjs solicitudes-usuario.test.mjs",
+    "test": "node --test server.test.mjs capacitaciones.test.mjs empresas.test.mjs hosting.test.mjs solicitudes-usuario.test.mjs postgresql.test.mjs",
     "respaldo": "node respaldar.mjs"
   },
   "engines": {
     "node": ">=24"
+  },
+  "dependencies": {
+    "pg": "^8.23.1"
   }
 }
