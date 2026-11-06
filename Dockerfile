@@ -13,4 +13,4 @@ WORKDIR /app/backend
 RUN npm install --omit=dev
 COPY --from=frontend /build/frontend/dist/frontend/browser /app/public
 EXPOSE 3001
-CMD ["node", "server.mjs"]
+CMD ["node", "iniciar-produccion.mjs"]

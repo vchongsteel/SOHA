@@ -1,0 +1,12 @@
+{
+  "name": "soha-infraestructura",
+  "private": true,
+  "scripts": {
+    "test": "npm --prefix backend test",
+    "infra:plan": "node scripts/railway-config.mjs plan",
+    "infra:apply": "node scripts/railway-config.mjs apply"
+  },
+  "devDependencies": {
+    "railway": "3.16.0"
+  }
+}

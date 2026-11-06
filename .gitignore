@@ -15,6 +15,7 @@
 **/importaciones/
 **/respaldos/
 **/logs/
-.railway/
+/.railway/*
+!/.railway/railway.ts
 .DS_Store
 Thumbs.db
