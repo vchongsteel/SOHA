@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 420" fill="none">
+  <defs>
+    <pattern id="reticula" width="16" height="16" patternUnits="userSpaceOnUse"><path d="M16 0H0V16" stroke="#90cbd0" stroke-opacity=".16" stroke-width=".5"/></pattern>
+  </defs>
+  <!-- Dos láminas: instalaciones electromecánicas y estructura metálica. -->
+  <g transform="rotate(9 338 163)" stroke="#9ed4d6" stroke-width="1.2">
+    <rect x="184" y="26" width="326" height="258" rx="3" fill="#123f4c"/>
+    <path d="M196 54H498M196 244H498"/>
+    <rect x="196" y="62" width="302" height="174" fill="url(#reticula)" stroke-opacity=".3"/>
+    <g fill="#9ed4d6" stroke="none" font-family="monospace" font-size="8" letter-spacing="1.2"><text x="198" y="44">IEM / ELECTROMECÁNICA</text><text x="198" y="262" font-size="6">INSTALACIONES · POTENCIA · CONTROL</text></g>
+    <path d="M220 86H472M220 92H472M220 98H472M238 86V120M254 92V120M270 98V120M238 130V151M254 130V151M270 130V151M238 163V181H270V163M254 181V192"/>
+    <path d="M234 130L242 120M250 130L258 120M266 130L274 120M233 151H243V163H233ZM249 151H259V163H249ZM265 151H275V163H265Z"/>
+    <circle cx="254" cy="208" r="15"/><path d="M247 214V201L254 209L261 201V214"/>
+    <path d="M334 86V120M326 120H342V137H326ZM334 137V159H363M363 151V168M369 151V168M369 159H399V192M390 196L399 187L408 196M399 192V217M385 217H413M389 222H409M394 227H404"/>
+    <path d="M442 98V133H464V180H442V209H416M437 133H447M437 180H447"/>
+    <circle cx="464" cy="156" r="9"/><path d="M458 150L470 162M470 150L458 162"/>
+  </g>
+  <g transform="rotate(-7 237 254)" stroke="#b8e3df" stroke-width="1.3">
+    <rect x="38" y="114" width="392" height="274" rx="3" fill="#123f4c"/>
+    <rect x="51" y="149" width="366" height="197" fill="url(#reticula)" stroke-opacity=".35"/>
+    <path d="M51 141H417M51 352H417M297 352V377M359 352V377M51 377H417"/>
+    <g fill="#b8e3df" stroke="none" font-family="monospace" font-size="8" letter-spacing="1.3"><text x="54" y="132">STEEL / CONSTRUCCIÓN + MONTAJE</text><text x="54" y="368" font-size="6">ESTRUCTURA METÁLICA / VISTA FRONTAL</text></g>
+    <!-- Pórtico, cerchas y arriostramientos. -->
+    <path d="M92 310V218L232 173L373 218V310M100 310V224L232 182L365 224V310M92 218H373M100 227H365M232 173V218M164 195V218M301 195V218M100 224L164 195L232 218L301 195L365 224"/>
+    <path d="M100 237H365M100 248H365M100 310L232 248L365 310M100 248L232 310L365 248M232 248V310" stroke-opacity=".7"/>
+    <path d="M84 310H108V316H84ZM357 310H381V316H357ZM78 320H115M350 320H388"/>
+    <!-- Cotas y ejes, sin medidas inventadas. -->
+    <path d="M92 327V339M373 327V339M87 334H378M89 331L95 337M370 331L376 337M75 218H62M75 310H62M68 213V315M65 215L71 221M65 307L71 313" stroke-width=".8"/>
+    <path d="M92 161V322M232 158V322M373 161V322" stroke-dasharray="7 4 1 4" stroke-opacity=".45" stroke-width=".7"/>
+    <circle cx="92" cy="165" r="6"/><circle cx="232" cy="165" r="6"/><circle cx="373" cy="165" r="6"/>
+    <path d="M310 361H345M310 367H337M372 361H405M372 367H398" stroke-opacity=".6" stroke-width=".7"/>
+  </g>
+</svg>
