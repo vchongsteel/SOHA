@@ -12,6 +12,7 @@
       @if(session.requiereConfiguracion()){<small>Usá al menos 8 caracteres. Conservá esta contraseña en un lugar seguro.</small>}
       <button type="submit" [disabled]="guardando() || form.invalid || (session.requiereConfiguracion() && datos.password!==confirmacion)">{{guardando()?'Procesando…':(session.requiereConfiguracion()?'Crear administrador':'Iniciar sesión')}}</button>
     </form>
+    @if(!session.requiereConfiguracion()){<p class="registro-enlace">¿No tenés cuenta? <a routerLink="/registro">Registrate</a></p>}
     <button class="reintentar" type="button" (click)="cargar()">Comprobar conexión</button>
   }
-</section><app-pie-pagina /></main>
+<app-pie-pagina /></section></main>

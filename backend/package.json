@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "start": "node server.mjs",
-    "test": "node --test server.test.mjs capacitaciones.test.mjs empresas.test.mjs hosting.test.mjs",
+    "test": "node --test server.test.mjs capacitaciones.test.mjs empresas.test.mjs hosting.test.mjs solicitudes-usuario.test.mjs",
     "respaldo": "node respaldar.mjs"
   },
   "engines": {

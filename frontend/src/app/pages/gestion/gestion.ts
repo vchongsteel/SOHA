@@ -1,3 +1,4 @@
+import {SolicitudesUsuario} from './solicitudes-usuario';
 import {RouterLink} from '@angular/router';
 import { Component,inject,signal,computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -15,7 +16,7 @@ const configuraciones:Record<string,{titulo:string;sub:string;campos:Campo[];col
   articulos:{titulo:'Catálogo de EPP',sub:'Cada código identifica un artículo y su talla o variante.',columnas:['codigo','descripcion','variante','unidad','proveedores'],campos:[{key:'codigo',label:'Código interno',max:40},{key:'descripcion',label:'Descripción',max:1000},{key:'variante',label:'Talla o variante',opcional:true,max:80},{key:'unidad',label:'Unidad de medida',max:30},{key:'minimo',label:'Existencia mínima por ubicación',tipo:'number'},{key:'ficha_url',label:'Enlace de ficha técnica',tipo:'url',opcional:true,max:2000}]},
   usuarios:{titulo:'Usuarios y permisos',sub:'Administrador: acceso completo. Registro: captura y consulta. Consulta: solo lectura.',columnas:['usuario','nombre','rol'],campos:[{key:'usuario',label:'Usuario',max:60},{key:'nombre',label:'Nombre'},{key:'rol',label:'Permiso',opciones:['Administrador','Registro','Consulta']},{key:'password',label:'Contraseña (mínimo 8 caracteres)',tipo:'password',opcional:true,max:128}]},
 };
-@Component({selector:'app-gestion',imports:[FormsModule,MatIconModule,RouterLink],templateUrl:'./gestion.html',styleUrl:'./gestion.scss'})
+@Component({selector:'app-gestion',imports:[FormsModule,MatIconModule,RouterLink,SolicitudesUsuario],templateUrl:'./gestion.html',styleUrl:'./gestion.scss'})
 export class Gestion {
   private api=inject(GestionApi);session=inject(Session);private ruta=inject(ActivatedRoute);
   entidad=this.ruta.snapshot.data['entidad'] as string;config=configuraciones[this.entidad];

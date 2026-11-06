@@ -1,5 +1,6 @@
 <section class="gestion">
   <header class="cabecera"><div><span class="eyebrow">SALUD OCUPACIONAL</span><h1>{{config.titulo}}</h1><p>{{config.sub}}</p></div>@if(session.puedeRegistrar() && (entidad!=='usuarios' || session.administrador())){@if(entidad==='usuarios'){<a class="primario" routerLink="/usuarios/registrar"><mat-icon>person_add</mat-icon>Registrar usuario</a>}@else{<button class="primario" type="button" (click)="abrir()"><mat-icon>add</mat-icon>Nuevo registro</button>}}</header>
+  @if(entidad==='usuarios' && session.administrador()){<app-solicitudes-usuario (resuelta)="cargar()" />}
   @if(mensaje()){<p class="exito" role="status">{{mensaje()}}</p>}
   @if(error()){<p class="error" role="alert">{{error()}}</p>}
   @if(form();as f){

@@ -29,3 +29,7 @@ Ejecutar `npm run respaldo` dentro de backend. La copia se valida con SQLite. Co
 ## Validación
 
 Dentro de backend: `npm test`. Las pruebas crean bases temporales y no modifican el personal real. Los saldos pendientes de carga se distinguen de una existencia confirmada de cero. Antes de registrar movimientos de un artículo debe definirse su unidad.
+
+## Registro de usuarios
+
+En Acceso, el enlace Registrate abre una solicitud pública de acceso. No crea una sesión ni permite elegir permisos. Un administrador la atiende desde Usuarios > Solicitudes de registro y asigna el permiso al aprobar. Registrar usuario dentro de Administración sigue permitiendo crear directamente una cuenta. Las contraseñas se guardan con scrypt; nunca se devuelven en las listas de solicitudes.

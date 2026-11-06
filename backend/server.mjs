@@ -1,3 +1,4 @@
+import {configurarSolicitudes} from './solicitudes-usuario.mjs';
 import { servirInterfaz } from './interfaz.mjs';
 import { configurarCapacitaciones } from './capacitaciones.mjs';
 import { createServer } from 'node:http';
@@ -74,6 +75,7 @@ export function createApp(dbPath) {
   const movementsSql = `SELECT m.id,m.solicitud,m.tipo,m.fecha,m.creado,m.cantidad,m.motivo,a.codigo,a.descripcion,a.variante,o.nombre AS origen,d.nombre AS destino,u.nombre AS responsable FROM movimientos m JOIN articulos a ON a.id=m.articulo_id LEFT JOIN ubicaciones o ON o.id=m.origen_id LEFT JOIN ubicaciones d ON d.id=m.destino_id JOIN usuarios u ON u.id=m.usuario_id ORDER BY m.creado DESC,m.rowid DESC`;
 
   const rutasCapacitaciones=configurarCapacitaciones(db);
+  const rutasSolicitudes=configurarSolicitudes(db);
   const server = createServer(async (req, res) => {
     const send = (status, body) => { res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' }); res.end(JSON.stringify(body)); };
     try {
@@ -123,6 +125,7 @@ export function createApp(dbPath) {
         if (!found || !passwordMatches(input.password,found.clave) || !found.activo) { failures.set(key,{count:attempt && attempt.until>now ? attempt.count+1:1,until:now+5*60000}); fail(401,'Usuario o contraseña incorrectos.'); }
         failures.delete(key); audit(found,'INGRESAR','usuarios',found.id); return send(200,{usuario:startSession(found)});
       }
+      if(rutasSolicitudes({path,method:req.method,input,user,send,text,fail,tx,audit,passwordHash,userView}))return;
       if (!user) fail(401,'Iniciá sesión para continuar.');
       if (req.method === 'POST' && path === '/api/auth/logout') { run('DELETE FROM sesiones WHERE token=?',hashToken(cookie)); res.setHeader('Set-Cookie',`so_session=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0${cookieSegura}`); return send(200,{ok:true}); }
       if (rutasCapacitaciones({path,method:req.method,input,user,url,send,tx,audit,text,fail})) return;

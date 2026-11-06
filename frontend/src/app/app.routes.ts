@@ -4,6 +4,7 @@ import { accesoGuard,administradorGuard } from './core/services/session';
 
 export const routes:Routes=[
   {path:'acceso',loadComponent:()=>import('./pages/acceso/acceso').then(m=>m.Acceso)},
+  {path:'registro',data:{publico:true},loadComponent:()=>import('./pages/registrar-usuario/registrar-usuario').then(m=>m.RegistrarUsuario)},
   {path:'usuarios/registrar',canActivate:[accesoGuard,administradorGuard],loadComponent:()=>import('./pages/registrar-usuario/registrar-usuario').then(m=>m.RegistrarUsuario)},
   {path:'bienvenida',canActivate:[accesoGuard],loadComponent:()=>import('./pages/bienvenida/bienvenida').then(m=>m.Bienvenida)},
   {path:'',component:Shell,canActivate:[accesoGuard],canActivateChild:[accesoGuard],children:[

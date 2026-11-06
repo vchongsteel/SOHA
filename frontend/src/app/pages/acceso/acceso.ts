@@ -2,10 +2,10 @@ import { PiePagina } from '../../shared/pie-pagina';
 import { MatIconModule } from '@angular/material/icon';
 import { Component,inject,signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router,RouterLink } from '@angular/router';
 import { Session } from '../../core/services/session';
 import { mensajeApi } from '../../core/services/personal-api';
-@Component({selector:'app-acceso',imports:[FormsModule,MatIconModule,PiePagina],templateUrl:'./acceso.html',styleUrl:'./acceso.scss'})
+@Component({selector:'app-acceso',imports:[FormsModule,MatIconModule,PiePagina,RouterLink],templateUrl:'./acceso.html',styleUrl:'./acceso.scss'})
 export class Acceso {
   session=inject(Session);private router=inject(Router);
   cargando=signal(true);guardando=signal(false);error=signal('');
