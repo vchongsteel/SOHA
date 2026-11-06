@@ -1,0 +1,129 @@
+<div class="encabezado">
+  <div>
+    <span class="etiqueta">PERSONAL</span>
+    <h2 mat-dialog-title>{{ esEdicion ? 'Editar colaborador' : 'Nuevo colaborador' }}</h2>
+    <p>Completá los datos básicos del trabajador.</p>
+  </div>
+
+  <button
+    class="cerrar"
+    type="button"
+    aria-label="Cerrar formulario" [disabled]="guardando()"
+    (click)="cancelar()"
+  >
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<form [formGroup]="formulario" (ngSubmit)="guardar()">
+  <mat-dialog-content>@if (error()) { <p class="error" role="alert">{{ error() }}</p> }
+    <p class="nota">Todos los campos son obligatorios.</p>
+
+    <div class="campos"><div class="campo ancho">
+  <label for="empresa">Empresa</label>
+  <select id="empresa" formControlName="empresa">
+    <option [ngValue]="null" disabled>Seleccioná la empresa</option>
+    <option value="STEEL">STEEL</option>
+    <option value="IEM">IEM</option>
+  </select>
+  @if (formulario.controls.empresa.touched && formulario.controls.empresa.invalid) {
+    <span class="error">Seleccioná STEEL o IEM.</span>
+  }
+</div>
+      <div class="campo">
+        <label for="codigo">Código</label>
+        <input
+          id="codigo"
+          formControlName="codigo"
+          maxlength="40"
+          placeholder="Ej. C007"
+          (input)="codigoDuplicado = false"
+        />
+
+        @if (
+          formulario.controls.codigo.touched &&
+          formulario.controls.codigo.invalid
+        ) {
+          <span class="error">Ingresá un código.</span>
+        }
+
+        @if (codigoDuplicado) {
+          <span class="error" role="alert">
+            Este código ya está registrado.
+          </span>
+        }
+      </div>
+
+      <div class="campo">
+        <label for="estado">Estado</label>
+        <select id="estado" formControlName="estado">
+          <option value="Activo">Activo</option>
+          <option value="Inactivo">Inactivo</option>
+        </select>
+      </div>
+
+      <div class="campo ancho">
+        <label for="nombre">Nombre completo</label>
+        <input
+          id="nombre"
+          formControlName="nombre"
+          maxlength="120"
+          autocomplete="name"
+          placeholder="Nombre y apellidos"
+        />
+
+        @if (
+          formulario.controls.nombre.touched &&
+          formulario.controls.nombre.invalid
+        ) {
+          <span class="error">Ingresá el nombre completo.</span>
+        }
+      </div>
+
+      <div class="campo">
+        <label for="puesto">Puesto</label>
+        <input
+          id="puesto"
+          formControlName="puesto"
+          maxlength="80"
+          placeholder="Ej. Técnico"
+        />
+
+        @if (
+          formulario.controls.puesto.touched &&
+          formulario.controls.puesto.invalid
+        ) {
+          <span class="error">Ingresá el puesto.</span>
+        }
+      </div>
+
+      <div class="campo">
+        <label for="area">Área</label>
+        <input
+          id="area"
+          formControlName="area"
+          maxlength="80"
+          placeholder="Ej. Mantenimiento"
+        />
+
+        @if (
+          formulario.controls.area.touched &&
+          formulario.controls.area.invalid
+        ) {
+          <span class="error">Ingresá el área.</span>
+        }
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button class="boton-secundario" type="button" [disabled]="guardando()" (click)="cancelar()">
+      Cancelar
+    </button>
+
+    <button class="boton-principal" type="submit" [disabled]="guardando()">
+      <mat-icon>check</mat-icon>
+      {{ guardando() ? 'Guardando…' : (esEdicion ? 'Guardar cambios' : 'Guardar colaborador') }}
+    </button>
+  </mat-dialog-actions>
+</form>

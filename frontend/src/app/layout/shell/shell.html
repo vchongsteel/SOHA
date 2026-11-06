@@ -1,0 +1,105 @@
+<mat-sidenav-container class="contenedor">
+  <mat-sidenav
+    #nav
+    class="menu"
+    [class.menu-expandido]="esCompacto()"
+    [mode]="esCompacto() ? 'over' : 'side'"
+    [opened]="!esCompacto()"
+  >
+    <a
+      class="marca-menu"
+      routerLink="/inicio"
+      aria-label="Salud Ocupacional — Inicio"
+      (click)="esCompacto() && nav.close()"
+    ><img class="logo-so-menu" src="/logos/salud-ocupacional-blanco.svg" alt="Salud Ocupacional STEEL e IEM" /></a>
+
+    <nav class="menu-lista" aria-label="Menú principal">
+      @for (item of menu; track item.ruta) { @if(item.ruta!=='/usuarios' || session.administrador()) {
+        <a
+          class="menu-item"
+          [routerLink]="item.ruta"
+          routerLinkActive="activo"
+          ariaCurrentWhenActive="page"
+          [attr.aria-label]="item.etiqueta"
+          [matTooltip]="item.etiqueta"
+          matTooltipPosition="right"
+          [matTooltipDisabled]="esCompacto()"
+          (click)="esCompacto() && nav.close()"
+        >
+          <mat-icon>{{ item.icono }}</mat-icon>
+
+          @if (esCompacto()) {
+            <span>{{ item.etiqueta }}</span>
+          }
+        </a>
+      } }
+    </nav>
+<button class="salir-menu" type="button" (click)="salir()" aria-label="Cerrar sesión"><mat-icon>logout</mat-icon>@if(esCompacto()){<span>Cerrar sesión</span>}</button></mat-sidenav>
+
+  <mat-sidenav-content #contenido class="contenido">
+    <header class="barra">
+      <div class="barra-identidad">
+        @if (esCompacto()) {
+          <button
+            mat-icon-button
+            type="button"
+            aria-label="Abrir menú principal"
+            [attr.aria-expanded]="nav.opened"
+            (click)="nav.toggle()"
+          >
+            <mat-icon>menu</mat-icon>
+          </button>
+        }
+
+        <div class="titulo"><strong>Salud Ocupacional</strong><span>Sistema de Gestión</span></div>
+      </div>
+
+      <app-campana /><div class="logos" aria-label="Empresas STEEL e IEM">
+        <div class="logo-steel">
+          <img
+            src="/logos/steel-negro.png"
+            alt="STEEL — Construcción y montaje industrial"
+          />
+        </div>
+
+        <span class="separador" aria-hidden="true"></span>
+
+        <div class="logo-iem">
+          <img
+            src="/logos/iem.png"
+            alt="IEM — La ingeniería detrás de la eficiencia"
+          />
+        </div>
+      </div>
+    </header>
+
+    <main class="pagina" id="contenido-principal">
+      <router-outlet (activate)="contenido.scrollTo({top:0,left:0})" />
+    </main>
+
+    @if (esCelular()) {
+      <nav class="barra-inferior" aria-label="Navegación rápida">
+        @for (item of menuMovil; track item.ruta) {
+          <a
+            [routerLink]="item.ruta"
+            routerLinkActive="activo"
+            ariaCurrentWhenActive="page"
+          >
+            <mat-icon>{{ item.icono }}</mat-icon>
+            <span>{{ item.etiqueta }}</span>
+          </a>
+        }
+
+        <button
+          type="button"
+          aria-label="Ver todos los módulos"
+          [attr.aria-expanded]="nav.opened"
+          (click)="nav.toggle()"
+        >
+          <mat-icon>apps</mat-icon>
+          <span>Más</span>
+        </button>
+      </nav>
+    }
+  </mat-sidenav-content>
+</mat-sidenav-container>

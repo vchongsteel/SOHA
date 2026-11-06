@@ -1,0 +1,2 @@
+@use '../../shared/gestion';
+.accesos-inicio{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}.acceso{display:flex;flex-direction:column;gap:12px;padding:24px;text-decoration:none;color:#202631}.acceso mat-icon{color:#008b80}.acceso span{font-size:12px;color:#687486;line-height:1.6}.acceso:hover{border-color:#008b80}.filtros{justify-content:space-between}@media(max-width:599px){.accesos-inicio{grid-template-columns:1fr;gap:0}}

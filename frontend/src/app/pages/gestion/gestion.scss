@@ -1,0 +1,7 @@
+@use '../../shared/gestion';
+
+.campo-clave{display:flex;align-items:center;gap:6px}.campo-clave input{flex:1}.ojo{min-width:44px}
+
+.celda-imagen{width:112px;min-width:112px}.miniatura-producto{display:grid;place-items:center;width:104px;height:104px;padding:8px;background:#fff;border:1px solid #e5e9ed;border-radius:12px;cursor:pointer}.miniatura-producto:hover{border-color:#008c83;box-shadow:0 3px 12px #008c831a}.miniatura-producto:focus-visible{outline:3px solid #008c83;outline-offset:3px}.miniatura-producto img{display:block;width:88px;height:88px;object-fit:contain}.sin-imagen{display:grid;justify-items:center;gap:6px;color:#727b89;font-size:12px}
+
+.paginacion{display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:12px;padding:18px;border-top:1px solid #edf0f4}.paginacion span{margin-right:auto;color:#596273}.paginacion label{display:flex;align-items:center;gap:8px}.paginacion select{padding:8px;border:1px solid #dce2e8;border-radius:8px;background:white}

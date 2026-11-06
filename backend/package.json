@@ -1,0 +1,13 @@
+{
+  "name": "salud-ocupacional-api",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.mjs",
+    "test": "node --test server.test.mjs capacitaciones.test.mjs empresas.test.mjs hosting.test.mjs",
+    "respaldo": "node respaldar.mjs"
+  },
+  "engines": {
+    "node": ">=24"
+  }
+}

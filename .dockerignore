@@ -1,0 +1,13 @@
+.git
+**/node_modules
+**/.angular
+**/dist
+**/coverage
+**/.env*
+**/*.sqlite*
+**/*.xlsx
+**/*.csv
+**/data
+**/importaciones
+**/respaldos
+**/logs

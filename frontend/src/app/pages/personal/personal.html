@@ -1,0 +1,280 @@
+<section class="personal">
+  <header class="encabezado">
+    <div>
+      <span class="etiqueta">GESTIÓN DEL EQUIPO</span>
+      <h1>Personal</h1>
+      <p>La información de tu equipo, en un solo lugar.</p>
+    </div>
+
+    <button
+      class="boton-principal"
+      type="button"
+      (click)="nuevoColaborador()" [disabled]="cargando() || !!errorCarga() || !session.puedeRegistrar()"
+    >
+      <mat-icon>add</mat-icon>
+      Nuevo colaborador
+    </button>
+  </header>
+
+  <div class="aviso-demo">
+    <mat-icon>info_outline</mat-icon>
+    Los registros se guardan en la base de datos local.
+  </div>
+
+  <div class="mensaje" role="status">
+    @if (mensaje()) {
+      <mat-icon>check_circle</mat-icon>
+      <span>{{ mensaje() }}</span>
+      <button
+        type="button"
+        aria-label="Cerrar mensaje"
+        (click)="mensaje.set('')"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    }
+  </div>
+
+  @if (cargando()) { <p role="status">Cargando colaboradores…</p> } @else if (errorCarga()) { <div class="aviso-error" role="alert"><p>{{ errorCarga() }}</p><button class="boton-suave" type="button" (click)="cargar()">Reintentar conexión</button></div> } @else { <button class="boton-suave actualizar" type="button" (click)="cargar()"><mat-icon>refresh</mat-icon>Actualizar lista</button><section class="resumen" aria-label="Resumen de personal">
+    <article class="indicador">
+      <span class="indicador-icono">
+        <mat-icon>groups</mat-icon>
+      </span>
+      <div>
+        <strong>{{ total() }}</strong>
+        <span>Colaboradores</span>
+      </div>
+    </article>
+
+    <article class="indicador">
+      <span class="indicador-icono verde">
+        <mat-icon>person_outline</mat-icon>
+      </span>
+      <div>
+        <strong>{{ activos() }}</strong>
+        <span>Activos</span>
+      </div>
+    </article>
+
+    <article class="indicador">
+      <span class="indicador-icono gris">
+        <mat-icon>person_off</mat-icon>
+      </span>
+      <div>
+        <strong>{{ inactivos() }}</strong>
+        <span>Inactivos</span>
+      </div>
+    </article>
+  </section>
+
+  <section class="panel" aria-labelledby="titulo-directorio">
+    <header class="panel-encabezado">
+      <div>
+        <h2 id="titulo-directorio">Directorio del equipo</h2>
+        <p>Consultá y actualizá los datos de los colaboradores.</p>
+      </div>
+      <span class="cantidad">{{ filtrados().length }} resultados</span>
+    </header>
+
+    <div class="filtros">
+      <div class="campo campo-busqueda">
+        <label for="buscar-personal">Buscar colaborador</label>
+        <div class="entrada-busqueda">
+          <mat-icon aria-hidden="true">search</mat-icon>
+          <input
+            id="buscar-personal"
+            type="search"
+            placeholder="Nombre, código o puesto"
+            [value]="busqueda()"
+            (input)="buscar($any($event.target).value)"
+          />
+        </div>
+      </div>
+
+      <div class="campo">
+        <label for="area-personal">Área</label>
+        <select
+          id="area-personal"
+          [value]="area()"
+          (change)="cambiarArea($any($event.target).value)"
+        >
+          <option value="">Todas las áreas</option>
+          @for (opcion of areas(); track opcion) {
+            <option [value]="opcion">{{ opcion }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="campo">
+        <label for="estado-personal">Estado</label>
+        <select
+          id="estado-personal"
+          [value]="estado()"
+          (change)="cambiarEstado($any($event.target).value)"
+        >
+          <option value="">Todos los estados</option>
+          <option value="Activo">Activo</option>
+          <option value="Inactivo">Inactivo</option>
+        </select>
+      </div>
+
+      @if (hayFiltros()) {
+        <button
+          class="boton-suave"
+          type="button"
+          (click)="limpiarFiltros()"
+        >
+          <mat-icon>filter_alt_off</mat-icon>
+          Limpiar
+        </button>
+      }
+    </div>
+
+    @if (filtrados().length > 0) {
+      <div class="vista-tabla">
+        <table>
+          <caption class="solo-lectores">
+            Directorio de colaboradores
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col">Colaborador</th>
+              <th scope="col">Empresa</th><th scope="col">Puesto</th>
+              <th scope="col">Área</th>
+              <th scope="col">Estado</th>
+              <th scope="col">Acciones</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (persona of visibles(); track persona.id) {
+              <tr>
+                <td>
+                  <div class="persona">
+                    <span class="avatar" aria-hidden="true">
+                      {{ iniciales(persona.nombre) }}
+                    </span>
+                    <div>
+                      <strong>{{ persona.nombre }}</strong>
+                      <span>{{ persona.codigo }}</span>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="estado" [class.inactivo]="!persona.empresa">{{ persona.empresa || 'Sin asignar' }}</span></td><td>{{ persona.puesto }}</td>
+                <td>{{ persona.area }}</td>
+                <td>
+                  <span
+                    class="estado"
+                    [class.inactivo]="persona.estado === 'Inactivo'"
+                  >
+                    <span class="punto" aria-hidden="true"></span>
+                    {{ persona.estado }}
+                  </span>
+                </td>
+                <td>
+                  <a class="boton-suave enlace-ficha" [routerLink]="['/personal', persona.id]" [attr.aria-label]="'Ver ficha de ' + persona.nombre"><mat-icon>badge</mat-icon>Ver ficha</a><button
+                    class="boton-suave"
+                    type="button"
+                    [attr.aria-label]="'Editar a ' + persona.nombre"
+                    (click)="editarColaborador(persona)" [disabled]="!session.puedeRegistrar()"
+                  >
+                    <mat-icon>edit</mat-icon>
+                    Editar
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <div class="vista-tarjetas">
+        @for (persona of visibles(); track persona.id) {
+          <article class="tarjeta-persona">
+            <div class="tarjeta-cabecera">
+              <span class="avatar" aria-hidden="true">
+                {{ iniciales(persona.nombre) }}
+              </span>
+
+              <div class="tarjeta-nombre">
+                <h3>{{ persona.nombre }}</h3>
+                <span>{{ persona.codigo }}</span>
+              </div>
+
+              <span
+                class="estado"
+                [class.inactivo]="persona.estado === 'Inactivo'"
+              >
+                {{ persona.estado }}
+              </span>
+            </div>
+
+            <dl class="tarjeta-detalles"><div><dt>Empresa</dt><dd>{{ persona.empresa || 'Sin asignar' }}</dd></div>
+              <div>
+                <dt>Puesto</dt>
+                <dd>{{ persona.puesto }}</dd>
+              </div>
+              <div>
+                <dt>Área</dt>
+                <dd>{{ persona.area }}</dd>
+              </div>
+            </dl>
+
+            <a class="boton-suave enlace-ficha" [routerLink]="['/personal', persona.id]" [attr.aria-label]="'Ver ficha de ' + persona.nombre"><mat-icon>badge</mat-icon>Ver ficha</a><button
+              class="boton-suave editar-movil"
+              type="button"
+              [attr.aria-label]="'Editar a ' + persona.nombre"
+              (click)="editarColaborador(persona)" [disabled]="!session.puedeRegistrar()"
+            >
+              <mat-icon>edit</mat-icon>
+              Editar colaborador
+            </button>
+          </article>
+        }
+      </div>
+    } @else {
+      <div class="vacio">
+        <mat-icon>person_search</mat-icon>
+        <h3>No encontramos colaboradores</h3>
+        <p>{{ total() === 0 ? 'Agregá el primer colaborador con el botón superior.' : 'Probá otra búsqueda o ajustá los filtros.' }}</p>
+        <button
+          class="boton-suave"
+          type="button"
+          (click)="limpiarFiltros()"
+        >
+          Limpiar filtros
+        </button>
+      </div>
+    }
+
+    <footer class="paginacion">
+      <span aria-live="polite" aria-atomic="true">
+        Mostrando {{ desde() }}–{{ hasta() }}
+        de {{ filtrados().length }}
+      </span>
+
+      <nav class="controles" aria-label="Paginación de personal">
+        <button
+          type="button"
+          aria-label="Página anterior"
+          [disabled]="pagina() === 0"
+          (click)="anterior()"
+        >
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+
+        <span>{{ pagina() + 1 }} / {{ totalPaginas() }}</span>
+
+        <button
+          type="button"
+          aria-label="Página siguiente"
+          [disabled]="pagina() >= totalPaginas() - 1"
+          (click)="siguiente()"
+        >
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+      </nav>
+    </footer>
+  </section>
+}
+</section>

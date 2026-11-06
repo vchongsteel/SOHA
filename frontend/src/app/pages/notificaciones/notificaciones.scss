@@ -1,0 +1,2 @@
+@use '../../shared/gestion';
+.lista-avisos{padding:0 22px 22px}.aviso{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:22px 0;border-top:1px solid #edf0f4}.aviso h2{font-size:17px;margin:12px 0 8px}.aviso p{font-size:12px;color:#687486;line-height:1.7}.aviso a{color:#00776e}.aviso.vencido .chip{background:#fff0ec;color:#a13e35}@media(max-width:599px){.aviso{align-items:stretch;flex-direction:column}}

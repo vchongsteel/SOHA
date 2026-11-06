@@ -1,0 +1,17 @@
+<main class="acceso"><section class="tarjeta">
+  <img src="/logos/salud-ocupacional-negro.png" alt="Salud Ocupacional STEEL e IEM" />
+  @if(cargando()){<p role="status">Conectando con el sistema…</p>}@else{
+    <h1>{{ session.requiereConfiguracion() ? 'Creá tu acceso de administrador' : 'Bienvenida al sistema' }}</h1>
+    <p>{{ session.requiereConfiguracion() ? 'Este primer usuario administrará los accesos de STEEL e IEM.' : 'Ingresá con tu usuario para continuar.' }}</p>
+    @if(error()){<p class="error" role="alert">{{error()}}</p>}
+    <form #form="ngForm" (ngSubmit)="form.valid && entrar()">
+      @if(session.requiereConfiguracion()){<label>Nombre<input name="nombre" [(ngModel)]="datos.nombre" required maxlength="120" autocomplete="name" /></label>}
+      <label>Usuario<input name="usuario" [(ngModel)]="datos.usuario" required maxlength="60" autocomplete="username" /></label>
+      <label for="clave-acceso">Contraseña</label><div class="campo-clave"><input id="clave-acceso" name="password" [type]="mostrar()?'text':'password'" [(ngModel)]="datos.password" required [minlength]="session.requiereConfiguracion()?8:1" maxlength="128" [autocomplete]="session.requiereConfiguracion()?'new-password':'current-password'" /><button class="ojo" type="button" [attr.aria-label]="mostrar()?'Ocultar contraseña':'Mostrar contraseña'" [attr.aria-pressed]="mostrar()" (click)="mostrar.set(!mostrar())"><mat-icon>{{mostrar()?'visibility_off':'visibility'}}</mat-icon></button></div>
+@if(session.requiereConfiguracion()){<label for="confirmar-acceso">Confirmar contraseña</label><div class="campo-clave"><input id="confirmar-acceso" name="confirmacion" [type]="mostrarConfirmacion()?'text':'password'" [(ngModel)]="confirmacion" required minlength="8" maxlength="128" autocomplete="new-password" /><button class="ojo" type="button" [attr.aria-label]="mostrarConfirmacion()?'Ocultar confirmación':'Mostrar confirmación'" [attr.aria-pressed]="mostrarConfirmacion()" (click)="mostrarConfirmacion.set(!mostrarConfirmacion())"><mat-icon>{{mostrarConfirmacion()?'visibility_off':'visibility'}}</mat-icon></button></div>@if(confirmacion && confirmacion!==datos.password){<p class="error">Las contraseñas no coinciden.</p>}}
+      @if(session.requiereConfiguracion()){<small>Usá al menos 8 caracteres. Conservá esta contraseña en un lugar seguro.</small>}
+      <button type="submit" [disabled]="guardando() || form.invalid || (session.requiereConfiguracion() && datos.password!==confirmacion)">{{guardando()?'Procesando…':(session.requiereConfiguracion()?'Crear administrador':'Iniciar sesión')}}</button>
+    </form>
+    <button class="reintentar" type="button" (click)="cargar()">Comprobar conexión</button>
+  }
+</section></main>

@@ -1,0 +1,45 @@
+<section class="ficha">
+  <a class="volver" routerLink="/personal"><mat-icon>arrow_back</mat-icon>Volver a Personal</a>
+
+  @if (cargando()) {
+    <div class="panel aviso" role="status">Cargando ficha del colaborador…</div>
+  } @else if (error()) {
+    <div class="panel aviso error" role="alert">
+      <mat-icon>error_outline</mat-icon>
+      <h1>No pudimos abrir esta ficha</h1>
+      <p>{{ error() }}</p>
+      <a class="boton" routerLink="/personal">Volver al directorio</a>
+    </div>
+  } @else if (persona(); as colaborador) {
+    <header class="encabezado">
+      <div><span class="etiqueta">PERSONAL / FICHA INDIVIDUAL</span><h1>Ficha del colaborador</h1><p>Información general del trabajador.</p></div>
+      <button class="boton" type="button" [disabled]="preparandoEdicion() || !session.puedeRegistrar()" (click)="editar()"><mat-icon>edit</mat-icon>{{ preparandoEdicion() ? 'Abriendo formulario…' : 'Editar datos' }}</button>
+    </header>
+
+    @if (mensaje()) { <p class="mensaje" role="status"><mat-icon>check_circle</mat-icon>{{ mensaje() }}</p> }
+    @if (errorEdicion()) { <p class="mensaje error" role="alert">{{ errorEdicion() }}</p> }
+
+    <article class="panel identidad" aria-label="Identificación del colaborador">
+      <span class="avatar" aria-hidden="true">{{ iniciales(colaborador.nombre) }}</span>
+      <div class="identidad-texto">
+        <h2>{{ colaborador.nombre }}</h2>
+        <p>{{ colaborador.puesto }}</p>
+        <div class="insignias"><span class="empresa">{{ colaborador.empresa || 'Empresa sin asignar' }}</span><span class="estado" [class.inactivo]="colaborador.estado === 'Inactivo'"><span aria-hidden="true">●</span> {{ colaborador.estado }}</span></div>
+      </div>
+    </article>
+
+    <section class="panel datos" aria-labelledby="datos-generales">
+      <header><mat-icon>badge</mat-icon><h2 id="datos-generales">Datos generales</h2></header>
+      <dl>
+        <div><dt>Código del colaborador</dt><dd>{{ colaborador.codigo }}</dd></div>
+        <div><dt>Empresa</dt><dd>{{ colaborador.empresa || 'Sin asignar' }}</dd></div>
+        <div><dt>Nombre completo</dt><dd>{{ colaborador.nombre }}</dd></div>
+        <div><dt>Estado</dt><dd>{{ colaborador.estado }}</dd></div>
+        <div><dt>Puesto</dt><dd>{{ colaborador.puesto }}</dd></div>
+        <div><dt>Área</dt><dd>{{ colaborador.area }}</dd></div>
+      </dl>
+    </section>
+    @if(origen(colaborador);as o){<section class="panel datos"><header><h2>Información del archivo de Personal</h2></header><dl><div><dt>Fecha de ingreso</dt><dd>{{o.fecha_ingreso || 'No indicada'}}</dd></div><div><dt>Correo electrónico</dt><dd>{{o.correo || 'No indicado'}}</dd></div></dl><p>Fuente: {{o.archivo}}, {{o.hoja}}, fila {{o.fila}}.</p></section>}
+    <app-historial-capacitaciones [colaboradorId]="colaborador.id" />
+  }
+</section>
