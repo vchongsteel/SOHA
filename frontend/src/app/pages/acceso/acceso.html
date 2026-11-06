@@ -1,7 +1,7 @@
 <main class="acceso"><section class="tarjeta">
   <img src="/logos/salud-ocupacional-negro.png" alt="Salud Ocupacional STEEL e IEM" />
   @if(cargando()){<p role="status">Conectando con el sistema…</p>}@else{
-    <h1>{{ session.requiereConfiguracion() ? 'Creá tu acceso de administrador' : 'Bienvenida al sistema' }}</h1>
+    <h1>{{ session.requiereConfiguracion() ? 'Creá tu acceso de administrador' : '¡Bienvenid@ a SOHA!' }}</h1>
     <p>{{ session.requiereConfiguracion() ? 'Este primer usuario administrará los accesos de STEEL e IEM.' : 'Ingresá con tu usuario para continuar.' }}</p>
     @if(error()){<p class="error" role="alert">{{error()}}</p>}
     <form #form="ngForm" (ngSubmit)="form.valid && entrar()">
@@ -14,4 +14,4 @@
     </form>
     <button class="reintentar" type="button" (click)="cargar()">Comprobar conexión</button>
   }
-</section></main>
+</section><app-pie-pagina /></main>

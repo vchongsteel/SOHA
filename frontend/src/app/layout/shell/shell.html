@@ -77,6 +77,8 @@
       <router-outlet (activate)="contenido.scrollTo({top:0,left:0})" />
     </main>
 
+    <app-pie-pagina />
+
     @if (esCelular()) {
       <nav class="barra-inferior" aria-label="Navegación rápida">
         @for (item of menuMovil; track item.ruta) {

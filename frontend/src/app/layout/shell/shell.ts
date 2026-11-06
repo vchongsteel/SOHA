@@ -1,3 +1,4 @@
+import { PiePagina } from '../../shared/pie-pagina';
 import { Campana } from '../../shared/campana';
 import { Session } from '../../core/services/session';
 import { Router } from '@angular/router';
@@ -18,7 +19,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 @Component({
   selector: 'app-shell',
   imports: [
-    Campana, RouterOutlet,
+    PiePagina, Campana, RouterOutlet,
     RouterLink,
     RouterLinkActive,
     MatSidenavModule,

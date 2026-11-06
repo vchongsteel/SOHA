@@ -388,3 +388,5 @@ button:focus-visible {
 }
 .salir-menu { display:flex;align-items:center;justify-content:center;gap:12px;margin:8px auto 20px;min-height:44px;padding:10px 16px;border:0;border-radius:10px;background:transparent;color:#d5deea;cursor:pointer; }
 .salir-menu:hover { background:#ffffff12; }
+
+@media(max-width:599px){app-pie-pagina{padding-bottom:76px}}

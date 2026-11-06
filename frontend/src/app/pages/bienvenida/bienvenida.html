@@ -1,0 +1,9 @@
+<main class="bienvenida"><div class="centro"><section class="tarjeta" aria-labelledby="titulo-bienvenida">
+  <img src="/logos/salud-ocupacional-negro.png" alt="Salud Ocupacional STEEL e IEM" width="180" height="112" />
+  <span class="etiqueta">SALUD OCUPACIONAL</span>
+  <h1 id="titulo-bienvenida">¡Bienvenid@, {{session.usuario()?.nombre}}!</h1>
+  <p>Tu espacio para cuidar a las personas de STEEL e IEM.</p>
+  <div class="resumen"><span><mat-icon>groups</mat-icon>Personal</span><span><mat-icon>health_and_safety</mat-icon>Protección</span><span><mat-icon>school</mat-icon>Capacitaciones</span></div>
+  <a class="principal" routerLink="/inicio">Entrar al sistema<mat-icon>arrow_forward</mat-icon></a>
+  @if(session.administrador()){<a class="secundario" routerLink="/usuarios/registrar">Registrar un usuario</a>}
+</section></div><app-pie-pagina /></main>

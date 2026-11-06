@@ -23,3 +23,8 @@ export const sesionInterceptor:HttpInterceptorFn=(req,next)=>{
   const router=inject(Router);
   return next(req).pipe(catchError(error=>{if(error.status===401 && !req.url.startsWith('/api/auth/'))void router.navigateByUrl('/acceso');return throwError(()=>error);}));
 };
+
+export const administradorGuard:CanActivateFn=async()=>{
+  const session=inject(Session),router=inject(Router);
+  try{if(!session.usuario())await session.refresh();return session.administrador()?true:router.parseUrl(session.usuario()?'/inicio':'/acceso');}catch{return router.parseUrl('/acceso');}
+};
