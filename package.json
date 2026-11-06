@@ -4,7 +4,8 @@
   "scripts": {
     "test": "npm --prefix backend test",
     "infra:plan": "node scripts/railway-config.mjs plan",
-    "infra:apply": "node scripts/railway-config.mjs apply"
+    "infra:apply": "node scripts/railway-config.mjs apply",
+    "test:acceso": "node --test frontend/src/app/pages/acceso/error-acceso.test.mjs"
   },
   "devDependencies": {
     "railway": "3.16.0"

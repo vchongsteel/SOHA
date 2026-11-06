@@ -4,3 +4,5 @@
 
 
 .marca .logo-salud{display:block;width:98px;height:66px;object-fit:contain;flex-shrink:0}@media(max-width:650px){.marca .logo-salud{width:82px;height:48px}.marca>span{display:none}}
+
+.error{display:flex;align-items:flex-start;gap:10px;margin:12px 0 0}.error>mat-icon{flex-shrink:0;font-size:21px;width:21px;height:21px}.error strong{display:block;font-size:13px;font-weight:700;margin-bottom:4px}.error p{margin:0;font-size:12px;line-height:1.6}input.input-error,.campo-clave.input-error{border-color:#cf7570;background:#fffafa}
