@@ -11,8 +11,9 @@
       routerLink="/inicio"
       aria-label="Salud Ocupacional — Inicio"
       (click)="esCompacto() && nav.close()"
-    ><img class="logo-so-menu" src="/logos/salud-ocupacional-blanco.svg" alt="Salud Ocupacional STEEL e IEM" /></a>
+    ><img class="logo-so-menu" src="/logos/salud-ocupacional-blanco.svg" alt="Salud Ocupacional STEEL e IEM" /><span class="marca-texto">SOHA<small>SALUD OCUPACIONAL</small></span></a>
 
+    <div class="menu-seccion">ESPACIO DE TRABAJO</div>
     <nav class="menu-lista" aria-label="Menú principal">
       @for (item of menu; track item.ruta) { @if(item.ruta!=='/usuarios' || session.administrador()) {
         <a
@@ -23,18 +24,16 @@
           [attr.aria-label]="item.etiqueta"
           [matTooltip]="item.etiqueta"
           matTooltipPosition="right"
-          [matTooltipDisabled]="esCompacto()"
+          [matTooltipDisabled]="true"
           (click)="esCompacto() && nav.close()"
         >
           <mat-icon>{{ item.icono }}</mat-icon>
 
-          @if (esCompacto()) {
-            <span>{{ item.etiqueta }}</span>
-          }
+          <span>{{ item.etiqueta }}</span>
         </a>
       } }
     </nav>
-<button class="salir-menu" type="button" (click)="salir()" aria-label="Cerrar sesión"><mat-icon>logout</mat-icon>@if(esCompacto()){<span>Cerrar sesión</span>}</button></mat-sidenav>
+<button class="salir-menu" type="button" (click)="salir()" aria-label="Cerrar sesión"><mat-icon>logout</mat-icon><span>Cerrar sesión</span></button></mat-sidenav>
 
   <mat-sidenav-content #contenido class="contenido">
     <header class="barra">
